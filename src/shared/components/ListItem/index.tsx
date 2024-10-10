@@ -18,14 +18,14 @@ const IconButton = styled.div`
   width: 24px;
   height: 24px;
   cursor: pointer;
-  color: #656565;
   flex-shrink: 0;
-
+`;
+const AddItemButton = styled(IconButton).attrs({ as: AddItemIcon })`
+  color: #656565;
   &:hover {
     color: #0056b3;
   }
 `;
-const AddItemButton = styled(IconButton).attrs({ as: AddItemIcon })``;
 const DeleteButton = styled(IconButton).attrs({ as: DeleteIcon })`
   color: #d32f2f;
   &:hover {
@@ -41,19 +41,19 @@ const ButtonWrapper = styled.div`
 
 interface ListItemProps {
   item: ListItemType;
-  add?: (id: string) => void;
-  del?: (id: string) => void;
+  onAdd?: (id: string) => void;
+  onDel?: (id: string) => void;
 }
 
-export const ListItem = memo(({ item, add, del }: ListItemProps) => {
+export const ListItem = memo(({ item, onAdd, onDel }: ListItemProps) => {
   const { title, id, path } = item;
 
   return (
     <Container $level={path.length - 1}>
       {title}
       <ButtonWrapper>
-        {add && <AddItemButton onClick={() => add(id)} />}
-        {del && id !== "parent" && <DeleteButton onClick={() => del(id)} />}
+        {onAdd && <AddItemButton onClick={() => onAdd(id)} />}
+        {onDel && id !== "parent" && <DeleteButton onClick={() => onDel(id)} />}
       </ButtonWrapper>
     </Container>
   );
