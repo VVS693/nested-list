@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { PropsWithChildren } from "react";
 import styled from "styled-components";
 
 export const Container = styled.div`
@@ -8,10 +8,6 @@ export const Container = styled.div`
   min-width: 360px;
 `;
 
-interface MainLayoutProps {
-  children: ReactNode;
-}
-
-export const MainLayout = ({ children }: MainLayoutProps) => {
+export const MainLayout = ({ children }: PropsWithChildren) => {
   return <Container>{children}</Container>;
 };

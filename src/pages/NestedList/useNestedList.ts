@@ -7,39 +7,40 @@ export const useNestedList = (initialList: ListItemType[]) => {
 
   const handleAddChild = useCallback((parentId: string) => {
     setListItems((prevListItems) => {
-      const parentItem = prevListItems.find((item) => item.id === parentId);
+      const parentIndex = prevListItems.findIndex(
+        (item) => item.id === parentId,
+      );
+      if (parentIndex === -1) return prevListItems;
 
-      if (parentItem) {
-        const siblings = prevListItems.filter((item) => {
-          const isSamePath =
-            item.path.slice(0, parentItem.path.length).toString() ===
-            parentItem.path.toString();
-          return isSamePath && item.path.length === parentItem.path.length + 1;
-        });
+      const parentItem = prevListItems[parentIndex];
+      const parentPathLength = parentItem.path.length;
 
-        const parentIndex = prevListItems.indexOf(parentItem);
-        let insertIndex = parentIndex + 1;
-        while (
-          insertIndex < prevListItems.length &&
-          prevListItems[insertIndex].path.length > parentItem.path.length
-        ) {
-          insertIndex++;
-        }
+      const siblings = prevListItems.filter(
+        (item) =>
+          item.path.length === parentPathLength + 1 &&
+          item.path.slice(0, parentPathLength).toString() ===
+            parentItem.path.toString(),
+      );
 
-        const newItem: ListItemType = {
-          id: uuidv4(),
-          title: `${[...parentItem.path, siblings.length + 1].join(".")}. Child of ${parentItem.title}`,
-          path: [...parentItem.path, siblings.length + 1],
-        };
-
-        return [
-          ...prevListItems.slice(0, insertIndex),
-          newItem,
-          ...prevListItems.slice(insertIndex),
-        ];
+      let insertIndex = parentIndex + 1;
+      while (
+        insertIndex < prevListItems.length &&
+        prevListItems[insertIndex].path.length > parentPathLength
+      ) {
+        insertIndex++;
       }
 
-      return prevListItems;
+      const newItem: ListItemType = {
+        id: uuidv4(),
+        title: `${[...parentItem.path, siblings.length + 1].join(".")}. Child of ${parentItem.title}`,
+        path: [...parentItem.path, siblings.length + 1],
+      };
+
+      return [
+        ...prevListItems.slice(0, insertIndex),
+        newItem,
+        ...prevListItems.slice(insertIndex),
+      ];
     });
   }, []);
 
@@ -51,12 +52,11 @@ export const useNestedList = (initialList: ListItemType[]) => {
         return prevListItems;
       }
 
-      return prevListItems.filter((item) => {
-        const isNestedItem =
-          item.path.slice(0, itemToDelete.path.length).toString() ===
-          itemToDelete.path.toString();
-        return !isNestedItem;
-      });
+      return prevListItems.filter(
+        (item) =>
+          item.path.slice(0, itemToDelete.path.length).toString() !==
+          itemToDelete.path.toString(),
+      );
     });
   }, []);
 
